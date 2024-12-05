@@ -17,6 +17,7 @@ const JUMP_VELOCITY = -250.0
 var state = RUN
 var health = 100
 var rubies = 0
+var player_pos
 
 func _physics_process(delta: float) -> void:
 	match state:
@@ -38,6 +39,9 @@ func _physics_process(delta: float) -> void:
 		animPlayer.play("Fall")
 
 	move_and_slide()
+	
+	player_pos = self.position
+	Signals.emit_signal("player_position_update", player_pos)
 
 func run_state ():
 	var direction := Input.get_axis("Left", "Right")
