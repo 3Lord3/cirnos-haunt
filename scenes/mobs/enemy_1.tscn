@@ -285,7 +285,6 @@ position = Vector2(0, -2.95)
 sprite_frames = SubResource("SpriteFrames_1y8is")
 animation = &"Attack"
 autoplay = "Idle"
-frame = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -296,14 +295,12 @@ autoplay = "Idle"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_kk5fn")
 
-[node name="AttackDirection" type="Node2D" parent="."]
-
-[node name="Attack" type="Area2D" parent="AttackDirection"]
+[node name="Attack" type="Area2D" parent="."]
 collision_layer = 0
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackDirection/Attack"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Attack"]
 position = Vector2(14, -1)
 shape = SubResource("RectangleShape2D_bgbsm")
 
-[connection signal="body_entered" from="AttackDirection/Attack" to="." method="_on_attack_body_entered"]
+[connection signal="body_entered" from="Attack" to="." method="_on_attack_body_entered"]
