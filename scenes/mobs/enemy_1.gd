@@ -22,6 +22,7 @@ var state: int = 0:
 
 var player
 var direction
+var damage = 40
 
 func _ready():
 	Signals.connect("player_position_update", Callable (self, "_on_player_position_update"))
@@ -37,7 +38,6 @@ func _physics_process(delta: float) -> void:
 
 func _on_player_position_update(player_pos):
 	player = player_pos
-	
 
 func _on_attack_body_entered(_body: Node2D) -> void:
 	state = ATTACK
@@ -45,22 +45,24 @@ func _on_attack_body_entered(_body: Node2D) -> void:
 func idle_state():
 	animPlayer.play("Idle")
 	await get_tree().create_timer(1).timeout
-	$Attack/CollisionShape2D.disabled = false
+	$AttackDirection/AttackRange/CollisionShape2D.disabled = false
 	state = CHASE
 
 func attack_state():
 	animPlayer.play("Attack")
 	await animPlayer.animation_finished
-	
-	$Attack/CollisionShape2D.disabled = true
-	
+	$AttackDirection/AttackRange/CollisionShape2D.disabled = true
 	state = IDLE
 
 func chase_state():
 	direction = (player - self.position).normalized()
 	if direction.x < 0:
 		sprite.flip_h = true
-		$Attack.rotation_degrees = 180
+		$AttackDirection.rotation_degrees = 180
 	else:
 		sprite.flip_h = false
-		$Attack.rotation_degrees = 0
+		$AttackDirection.rotation_degrees = 0
+
+
+func _on_hit_box_area_entered(area: Area2D) -> void:
+	Signals.emit_signal("enemy_attack", damage)

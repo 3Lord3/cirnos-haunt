@@ -1,7 +1,8 @@
-[gd_scene load_steps=36 format=3 uid="uid://cvrt2ee8ljc5w"]
+[gd_scene load_steps=39 format=3 uid="uid://cvrt2ee8ljc5w"]
 
 [ext_resource type="Script" path="res://scenes/player/player.gd" id="1_hc834"]
 [ext_resource type="Texture2D" uid="uid://dm803efg30hee" path="res://assets/characters/cirno.png" id="2_w76mw"]
+[ext_resource type="PackedScene" uid="uid://dxm1tjj0q1w5p" path="res://scenes/damage_box/damage_box.tscn" id="3_6cidl"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_nsnba"]
 radius = 5.0
@@ -18,6 +19,10 @@ region = Rect2(16, 96, 16, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_5jppa"]
 atlas = ExtResource("2_w76mw")
 region = Rect2(32, 96, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_82bvx"]
+atlas = ExtResource("2_w76mw")
+region = Rect2(0, 160, 16, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ebr3b"]
 atlas = ExtResource("2_w76mw")
@@ -117,6 +122,14 @@ animations = [{
 }],
 "loop": true,
 "name": &"Attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_82bvx")
+}],
+"loop": false,
+"name": &"Damage",
 "speed": 5.0
 }, {
 "frames": [{
@@ -234,6 +247,33 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": ["Attack"]
+}
+
+[sub_resource type="Animation" id="Animation_nqmr3"]
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedSprite2D:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["Damage"]
 }
 
 [sub_resource type="Animation" id="Animation_wlu35"]
@@ -376,6 +416,7 @@ tracks/1/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_wwswy"]
 _data = {
 "Attack": SubResource("Animation_sp3go"),
+"Damage": SubResource("Animation_nqmr3"),
 "Death": SubResource("Animation_wlu35"),
 "Fall": SubResource("Animation_21kye"),
 "Idle": SubResource("Animation_gjvhn"),
@@ -393,7 +434,7 @@ shape = SubResource("CapsuleShape2D_nsnba")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -2.95)
 sprite_frames = SubResource("SpriteFrames_fl4ym")
-animation = &"Fall"
+animation = &"Damage"
 autoplay = "Idle"
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -407,3 +448,9 @@ libraries = {
 "": SubResource("AnimationLibrary_wwswy")
 }
 autoplay = "Idle"
+
+[node name="AttackDirection" type="Node2D" parent="."]
+
+[node name="DamageBox" parent="AttackDirection" instance=ExtResource("3_6cidl")]
+
+[editable path="AttackDirection/DamageBox"]

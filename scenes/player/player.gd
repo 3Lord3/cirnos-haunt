@@ -5,7 +5,8 @@ enum {
 	JUMP,
 	ATTACK,
 	DEATH,
-	FALL
+	FALL,
+	DAMAGE
 }
 
 const SPEED = 180.0
@@ -19,6 +20,9 @@ var health = 100
 var rubies = 0
 var player_pos
 
+func _ready():
+	Signals.connect("enemy_attack", Callable(self, "_on_damage_received"))
+
 func _physics_process(delta: float) -> void:
 	match state:
 		RUN:
@@ -31,6 +35,8 @@ func _physics_process(delta: float) -> void:
 			death_state()
 		FALL:
 			pass
+		DAMAGE:
+			damage_state()
 	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -43,7 +49,7 @@ func _physics_process(delta: float) -> void:
 	player_pos = self.position
 	Signals.emit_signal("player_position_update", player_pos)
 
-func run_state ():
+func run_state():
 	var direction := Input.get_axis("Left", "Right")
 	if direction:
 		velocity.x = direction * SPEED
@@ -64,23 +70,19 @@ func run_state ():
 		
 	if Input.is_action_just_pressed("Jump") and is_on_floor():
 		state = JUMP
-		
-	if health <= 0:
-		state = DEATH
 
-func jump_state ():
+func jump_state():
 	velocity.y = JUMP_VELOCITY
 	animPlayer.play("Jump")
 	state = RUN
 
-func attack_state ():
+func attack_state():
 	velocity.x = 0
 	animPlayer.play("Attack")
 	if Input.is_action_just_released("Attack"):
 		state = RUN
 
-func death_state ():
-	health = 0
+func death_state():
 	velocity.x = 0
 	
 	animPlayer.play("Death")
@@ -88,3 +90,18 @@ func death_state ():
 	
 	queue_free()
 	get_tree().change_scene_to_file.bind("res://scenes/menu/menu.tscn").call_deferred()
+	
+func damage_state():
+	velocity.x = 0
+	animPlayer.play("Damage")
+	await anim.animation_finished
+	state = RUN
+
+func _on_damage_received(enemy_damage):
+	health -= enemy_damage
+	
+	if health <= 0:
+		health = 0
+		state = DEATH
+	else:
+		state = DAMAGE
