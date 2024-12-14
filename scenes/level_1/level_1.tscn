@@ -1,10 +1,14 @@
-[gd_scene load_steps=11 format=4 uid="uid://c7kv6m04qeko3"]
+[gd_scene load_steps=14 format=4 uid="uid://c7kv6m04qeko3"]
 
 [ext_resource type="PackedScene" uid="uid://bla1d1s2d3pan" path="res://scenes/background/bg.tscn" id="1_6xddt"]
+[ext_resource type="Script" path="res://scenes/level_1/level_1.gd" id="1_yp411"]
 [ext_resource type="PackedScene" uid="uid://cvrt2ee8ljc5w" path="res://scenes/player/player.tscn" id="2_6agc8"]
 [ext_resource type="PackedScene" uid="uid://ct843s6yar2bs" path="res://scenes/mobs/enemy_1.tscn" id="3_sfy4x"]
 [ext_resource type="PackedScene" uid="uid://caqwptigq50f3" path="res://scenes/collectables/ruby.tscn" id="4_0ypeb"]
 [ext_resource type="Texture2D" uid="uid://ccipvb8tvp088" path="res://assets/tileset/tiles.png" id="5_t58gp"]
+[ext_resource type="Texture2D" uid="uid://5an3mjvp0h24" path="res://assets/bars/base/under.png" id="6_us410"]
+[ext_resource type="Texture2D" uid="uid://7noc1mqcf57i" path="res://assets/bars/base/over.png" id="7_w1vw6"]
+[ext_resource type="Texture2D" uid="uid://dx0tukpic1ljy" path="res://assets/bars/base/progress.png" id="8_ygh7j"]
 
 [sub_resource type="GDScript" id="GDScript_4eccw"]
 script/source = "extends Node2D
@@ -293,13 +297,6 @@ texture = ExtResource("5_t58gp")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_kkugn")
 
-[sub_resource type="GDScript" id="GDScript_1j08r"]
-script/source = "extends Label
-
-func _process(_delta: float) -> void:
-	text = \"Здоровье: \" + str($\"../../Player/Player\".health)
-"
-
 [sub_resource type="GDScript" id="GDScript_5pq56"]
 script/source = "extends Label
 
@@ -308,6 +305,7 @@ func _process(_delta: float) -> void:
 "
 
 [node name="Level" type="Node2D"]
+script = ExtResource("1_yp411")
 
 [node name="Bg" parent="." instance=ExtResource("1_6xddt")]
 
@@ -343,22 +341,28 @@ tile_set = SubResource("TileSet_bri0p")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="HealthLabel" type="Label" parent="CanvasLayer"]
-offset_left = 2.0
-offset_top = 1.0
-offset_right = 84.0
-offset_bottom = 32.0
-theme_override_font_sizes/font_size = 22
-text = "Здоровье:"
-script = SubResource("GDScript_1j08r")
-
 [node name="RubiesLabel" type="Label" parent="CanvasLayer"]
-offset_left = 2.0
-offset_top = 34.0
-offset_right = 84.0
-offset_bottom = 65.0
+offset_left = 3.0
+offset_top = 53.0
+offset_right = 95.0
+offset_bottom = 84.0
 theme_override_font_sizes/font_size = 22
 text = "Рубины:"
 script = SubResource("GDScript_5pq56")
 
+[node name="HealthBar" type="TextureProgressBar" parent="CanvasLayer"]
+offset_left = 4.0
+offset_top = 3.0
+offset_right = 127.0
+offset_bottom = 44.0
+pivot_offset = Vector2(469, 51)
+value = 100.0
+nine_patch_stretch = true
+texture_under = ExtResource("6_us410")
+texture_over = ExtResource("7_w1vw6")
+texture_progress = ExtResource("8_ygh7j")
+tint_over = Color(0.82396, 0.663187, 0.363278, 1)
+tint_progress = Color(0.921569, 0.203922, 0.203922, 1)
+
+[connection signal="health_changed" from="Player/Player" to="." method="_on_player_health_changed"]
 [connection signal="timeout" from="Collectables/Timer" to="Collectables" method="_on_timer_timeout"]

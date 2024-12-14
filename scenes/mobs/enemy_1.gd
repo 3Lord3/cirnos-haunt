@@ -64,5 +64,5 @@ func chase_state():
 		$AttackDirection.rotation_degrees = 0
 
 
-func _on_hit_box_area_entered(area: Area2D) -> void:
+func _on_hit_box_area_entered(_area: Area2D) -> void:
 	Signals.emit_signal("enemy_attack", damage)

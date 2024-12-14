@@ -1,5 +1,10 @@
 extends CharacterBody2D
 
+signal health_changed(new_health)
+
+const SPEED = 180.0
+const JUMP_VELOCITY = -250.0
+
 enum {
 	RUN,
 	JUMP,
@@ -9,19 +14,18 @@ enum {
 	DAMAGE
 }
 
-const SPEED = 180.0
-const JUMP_VELOCITY = -250.0
-
 @onready var anim = $AnimatedSprite2D
 @onready var animPlayer = $AnimationPlayer
 
 var state = RUN
-var health = 100
+var health
+var max_health = 100
 var rubies = 0
 var player_pos
 
 func _ready():
 	Signals.connect("enemy_attack", Callable(self, "_on_damage_received"))
+	health = max_health
 
 func _physics_process(delta: float) -> void:
 	match state:
@@ -105,3 +109,4 @@ func _on_damage_received(enemy_damage):
 		state = DEATH
 	else:
 		state = DAMAGE
+	emit_signal("health_changed", health)
